@@ -80,12 +80,17 @@ def scan_nameservers_parallel(nameservers: List[str], threads: int=1000, domain:
         for ns in nameservers:
             jobs.append(executor.submit(checker.ns_exists, ns))
 
-        results = [job.result() for job in jobs]
+        print('ip, rcode, response_timestamp, region, request_domain, record')
+        for job in jobs:
+            res = job.result()
+            if res is not None:
+                print(res.ip, res.rcode, res.response_timestamp, res.region, res.request_domain, res.record)
+        #  results = [job.result() for job in jobs]
 
         # Return a list of DNSResolver objects.
         # Filter the None's out of the list from
         # IP's that did not host nameservers
-        return list(filter(lambda res: res is not None, results))
+        #  return list(filter(lambda res: res is not None, results))
 
 
 def main():
@@ -94,7 +99,7 @@ def main():
     nameservers = get_nameservers(args.ADDRESS_FILE.name)
 
     a = scan_nameservers_parallel(nameservers, domain=args.domain)
-    pprint.pprint(a)
+    #  pprint.pprint(a)
 
 
 if __name__ == '__main__':
